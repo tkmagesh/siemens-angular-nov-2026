@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Calculator</title>
+    <script src="jquery-4.1.0.js"></script>
+    <style>
+        .field{
+            margin: 10px;
+        }
+        label{
+            display: inline-block;
+            width: 100px;
+        }
+        td{
+            padding: 5px;
+        }
+    </style>
+    <script>
+        class SalaryCalculatorModel{
+            basic = 0;
+            hra = 0;
+            da = 0;
+            tax = 0;
+            salary = 0;
+
+            calculateSalary(){
+                var grossSalary = this.basic + this.hra + this.da;
+                var taxAmount = (grossSalary * this.tax) / 100;
+                this.salary = grossSalary - taxAmount;
+            }
+        }
+
+        $(document).ready(function(){
+            window.model = new SalaryCalculatorModel();
+
+            $("#btnCalculate").click(function(){
+
+                
+                model.basic = parseFloat($("#txtBasic").val());
+                model.hra = parseFloat($("#txtHra").val());
+                model.da = parseFloat($("#txtDa").val());
+                model.tax = parseFloat($("#rangeTax").val());
+
+                model.calculateSalary();
+
+                $("#tdBasic").text(model.basic.toFixed(2));
+                $("#tdHra").text(model.hra.toFixed(2));
+                $("#tdDa").text(model.da.toFixed(2));
+                $("#tdTax").text(model.tax.toFixed(2));
+                $("#tdSalary").text(model.salary.toFixed(2));
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Salary Calculator - V2.0</h1>
+    <hr>
+    <div>
+        <div class="field">
+            <label for="">Basic :</label>
+            <input type="number" name="" id="txtBasic">
+        </div>
+        <div class="field">
+            <label for="">HRA :</label>
+            <input type="number" name="" id="txtHra">
+        </div>
+        <div class="field">
+            <label for="">DA :</label>
+            <input type="number" name="" id="txtDa">
+        </div>
+        <div class="field">
+            <label for="">Tax :</label>
+            <input type="range" name="" id="rangeTax" min="0" max="30" value="0">
+        </div>
+        <div class="field">
+            <button id="btnCalculate">Calculate</button>
+        </div>
+        <div class="field">
+            <table>
+                <tr>
+                    <td>Basic</td>
+                    <td>HRA</td>
+                    <td>DA</td>
+                    <td>Tax</td>
+                    <td>Gross Salary</td>
+                </tr>
+                <tr>
+                    <td id="tdBasic">0</td>
+                    <td id="tdHra">0</td>
+                    <td id="tdDa">0</td>
+                    <td id="tdTax">0</td>
+                    <td id="tdSalary">0</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

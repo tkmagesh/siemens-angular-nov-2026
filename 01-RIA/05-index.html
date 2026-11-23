@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Calculator</title>
+    <script src="jquery-4.1.0.js"></script>
+    <style>
+        .field{
+            margin: 10px;
+        }
+        label{
+            display: inline-block;
+            width: 100px;
+        }
+        td{
+            padding: 5px;
+        }
+    </style>
+    <script>
+        class SalaryCalculatorModel{
+            _basic = 0;
+            hra = 0;
+            da = 0;
+            tax = 0;
+            salary = 0;
+
+            onSalaryChange = null;
+            onBasicChange = null;
+
+            getBasic(){
+                return this._basic;
+            }
+            setBasic(value){
+                this._basic = value;
+                if(typeof this.onBasicChange === "function"){
+                    this.onBasicChange();
+                }
+            }
+            calculateSalary(){
+                var grossSalary = this.getBasic() + this.hra + this.da;
+                var taxAmount = (grossSalary * this.tax) / 100;
+                this.salary = grossSalary - taxAmount;
+                if(typeof this.onSalaryChange === "function"){
+                    this.onSalaryChange();
+                }
+            }
+        }
+
+        $(document).ready(function(){
+            window.model = new SalaryCalculatorModel();
+
+            $("#txtBasic").change(function(){
+                model.setBasic(parseFloat($(this).val()));
+            });
+
+            $("#txtHra").change(function(){
+                model.hra = parseFloat($(this).val());
+            });
+
+            $("#txtDa").change(function(){
+                model.da = parseFloat($(this).val());
+            });
+
+            $("#rangeTax").change(function(){
+                model.tax = parseFloat($(this).val());
+            });
+
+            $("#btnCalculate").click(function(){
+
+                model.calculateSalary();
+                
+                $("#tdHra").text(model.hra.toFixed(2));
+                $("#tdDa").text(model.da.toFixed(2));
+                $("#tdTax").text(model.tax.toFixed(2));
+               
+            });
+
+            model.onSalaryChange = function(){
+                $("#tdSalary").text(model.salary.toFixed(2));
+            };
+            model.onBasicChange = function(){
+                $("#tdBasic").text(model.getBasic().toFixed(2));
+            };
+        });
+    </script>
+</head>
+<body>
+    <h1>Salary Calculator - V5.0</h1>
+    <hr>
+    <div>
+        <div class="field">
+            <label for="">Basic :</label>
+            <input type="number" name="" id="txtBasic">
+        </div>
+        <div class="field">
+            <label for="">HRA :</label>
+            <input type="number" name="" id="txtHra">
+        </div>
+        <div class="field">
+            <label for="">DA :</label>
+            <input type="number" name="" id="txtDa">
+        </div>
+        <div class="field">
+            <label for="">Tax :</label>
+            <input type="range" name="" id="rangeTax" min="0" max="30" value="0">
+        </div>
+        <div class="field">
+            <button id="btnCalculate">Calculate</button>
+        </div>
+        <div class="field">
+            <table>
+                <tr>
+                    <td>Basic</td>
+                    <td>HRA</td>
+                    <td>DA</td>
+                    <td>Tax</td>
+                    <td>Gross Salary</td>
+                </tr>
+                <tr>
+                    <td id="tdBasic">0</td>
+                    <td id="tdHra">0</td>
+                    <td id="tdDa">0</td>
+                    <td id="tdTax">0</td>
+                    <td id="tdSalary">0</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
