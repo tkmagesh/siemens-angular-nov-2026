@@ -1,3 +1,8 @@
 <h1>Hi, {{ title() }}!</h1>
-<h3>{{ time() }}</h3>
 <button (click)="ChangeTitle()">Change Title</button>
+<app-timer></app-timer>
+<div>
+  <button (click)="Decrement()">Decrement</button>
+  <span> [ {{ counter() }} ] </span>
+  <button (click)="Increment()">Increment</button>
+</div>
