@@ -1,4 +1,8 @@
-export default class Product {
+export interface IPricingStrategy {
+    calculatePrice(discountPercentage: number): number;
+}
+
+export default class Product implements IPricingStrategy {
     private _id : number;
     private _name : string;
     private _price : number;
@@ -7,6 +11,9 @@ export default class Product {
         this._id = id;
         this._name = name;
         this._price = price;
+    }
+    calculatePrice(discountPercentage: number): number {
+        return this.calculateDiscountedPrice(discountPercentage);
     }
 
     get id(): number {
@@ -46,9 +53,7 @@ export enum ProductCategory {
     Furniture = "Furniture"
 }
 
-export interface IPricingStrategy {
-    calculatePrice(product: Product, discountPercentage: number): number;
-}
+
 
 
 
