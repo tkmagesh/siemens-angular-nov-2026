@@ -1,0 +1,23 @@
+<h1>Products</h1>
+<div>
+    <label for="">Product Name :</label>
+    <input type="text" name="" id="">
+    <button>Add Product</button>
+</div>
+<ul>
+    @for (productName of productNames; track $index;) {
+        <li>
+            <input type="checkbox">
+            <span [class]=" $even ? 'even' : 'odd'">
+                [ {{ $index + 1 }} / {{ $count }} ] - {{ productName }}
+            </span>
+            <button> [ X ] </button>
+        </li>
+    }
+</ul>
+<div>
+    <h3>Selected Products</h3>
+    <div>
+        [selected products will be displayed here]
+    </div>
+</div>

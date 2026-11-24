@@ -1,0 +1,13 @@
+ul {
+    width: 400px;
+}
+li {
+    list-style: none;
+    --webkit-padding-start: 0px;
+}
+.odd {
+    background-color: #f0f0f0;
+}
+.even {
+    background-color: #e0e0e0;
+}
