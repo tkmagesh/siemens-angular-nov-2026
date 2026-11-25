@@ -1,0 +1,19 @@
+<ul>
+    @for (product of list; track $index;) {
+        <li>
+            <!-- 
+            <input type="checkbox" (change)="updateProductSelection($index, $event.target.checked)" [checked]="product.selected">
+            <span [class]=" $even ? 'even' : 'odd'">
+                [ {{ $index + 1 }} / {{ $count }} ] - {{ product.name }}
+            </span>
+            <button (click)="removeProduct($index)"> [ X ] </button> 
+            -->
+
+            <input type="checkbox" [checked]="product.selected">
+            <span [class]=" $even ? 'even' : 'odd'">
+                [ {{ $index + 1 }} / {{ $count }} ] - {{ product.name }}
+            </span>
+            <button> [ X ] </button>
+        </li>
+    }
+</ul>

@@ -2,17 +2,26 @@ import { Component, computed, Signal, signal, WritableSignal } from "@angular/co
 import { ProductList } from "./types";
 import { SelectedProductsPipe } from "./selected-products.pipe";
 import { JsonPipe } from "@angular/common";
+import { AddProduct } from "./add-product/add-product";
+import { ProductsList } from "./products-list/products-list";
+import { SelectedProductsList } from "./selected-products-list/selected-products-list";
 
 @Component({
     selector: 'app-products',
-    imports: [SelectedProductsPipe, JsonPipe],
+    imports: [
+        SelectedProductsPipe
+        , JsonPipe
+        ,AddProduct
+        ,ProductsList
+        ,SelectedProductsList
+    ],
     templateUrl: './products.html',
     styleUrls: ['./products.css']
 })
 export class Products {
     newProduct = signal('');
 
-    productNames = signal([
+    productNames = signal<ProductList>([
         {name : 'Pen', selected : false},
         {name : 'Pencil', selected : false},
         {name : 'Marker', selected : false},

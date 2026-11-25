@@ -1,27 +1,4 @@
 <h1>Products</h1>
-<div>
-    <label for="">Product Name :</label>
-    <input type="text" (input)="newProduct.set($event.target.value)" [value]="newProduct()">
-    <span> [ {{ newProduct().length }} ] </span>
-    <button (click)="addProduct()">Add Product</button>
-</div>
-<ul>
-    @for (product of productNames(); track $index;) {
-        <li>
-            <input type="checkbox" (change)="updateProductSelection($index, $event.target.checked)" [checked]="product.selected">
-            <span [class]=" $even ? 'even' : 'odd'">
-                [ {{ $index + 1 }} / {{ $count }} ] - {{ product.name }}
-            </span>
-            <button (click)="removeProduct($index)"> [ X ] </button>
-        </li>
-    }
-</ul>
-<div>
-    {{ productNames() | json}}
-</div>
-<div>
-    <h3>Selected Products</h3>
-    <div>
-        {{ productNames() | selected | json}}
-    </div>
-</div>
+<!-- <add-product></add-product> -->
+<products-list [list]="productNames()"></products-list>
+<!-- <selected-products-list></selected-products-list> -->
