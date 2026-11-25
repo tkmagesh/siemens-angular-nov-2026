@@ -19,7 +19,7 @@ import { SelectedProductsList } from "./selected-products-list/selected-products
     styleUrls: ['./products.css']
 })
 export class Products {
-    newProduct = signal('');
+    
 
     productNames = signal<ProductList>([
         {name : 'Pen', selected : false},
@@ -37,11 +37,9 @@ export class Products {
         return this.productNames().filter(p => p.selected);
     });
 
-    addProduct() : void {
-        if(this.newProduct().trim() !== '') {
-            this.productNames.update(products => [...products, {name : this.newProduct(), selected : false}]);
-            this.newProduct.set('');
-        }
+    // Method to handle the addition of a new product (from add-product component)
+    onAddProduct(productName : string) {
+        this.productNames.update(products => [...products, {name : productName, selected : false}]);
     }
 
     removeProduct(idx : number){
