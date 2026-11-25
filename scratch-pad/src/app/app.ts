@@ -4,9 +4,10 @@ import Timer  from './timer/timer';
 import { Counter } from './counter/counter';
 import { Products } from './products/products';
 import { DatePipe, UpperCasePipe } from '@angular/common';
+import { Greeter } from './greeter/greeter';
 
 @Component({
-  imports: [RouterOutlet, Timer, Counter, Products, DatePipe, UpperCasePipe],
+  imports: [RouterOutlet, Timer, Counter, Products, DatePipe, UpperCasePipe, Greeter],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

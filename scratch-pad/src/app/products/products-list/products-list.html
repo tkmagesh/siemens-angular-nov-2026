@@ -13,7 +13,7 @@
             <span [class]=" $even ? 'even' : 'odd'">
                 [ {{ $index + 1 }} / {{ $count }} ] - {{ product.name }}
             </span>
-            <button> [ X ] </button>
+            <button (click)="onRemoveClick($index)"> [ X ] </button>
         </li>
     }
 </ul>

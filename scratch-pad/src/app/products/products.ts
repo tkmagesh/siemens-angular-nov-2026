@@ -1,5 +1,5 @@
 import { Component, computed, Signal, signal, WritableSignal } from "@angular/core";
-import { ProductList } from "./types";
+import { Product, ProductList } from "./types";
 import { SelectedProductsPipe } from "./selected-products.pipe";
 import { JsonPipe } from "@angular/common";
 import { AddProduct } from "./add-product/add-product";
@@ -38,8 +38,8 @@ export class Products {
     });
 
     // Method to handle the addition of a new product (from add-product component)
-    onAddProduct(productName : string) {
-        this.productNames.update(products => [...products, {name : productName, selected : false}]);
+    onAddProduct(newProduct: Product) {
+        this.productNames.update(products => [...products, newProduct]);
     }
 
     removeProduct(idx : number){

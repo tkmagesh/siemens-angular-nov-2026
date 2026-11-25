@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { Product } from "../types";
 
 @Component({
@@ -8,6 +8,13 @@ import { Product } from "../types";
 export class ProductsList {
 
     @Input()
-    list : Array<Product> = [];
+    list : ReadonlyArray<Product> = [];
+
+    @Output()
+    onRemove = new EventEmitter<number>();
+    
+    onRemoveClick(idx : number) {
+        this.onRemove.emit(idx);
+    }
 
 }
