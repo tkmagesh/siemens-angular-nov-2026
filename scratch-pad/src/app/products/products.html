@@ -1,4 +1,4 @@
-<h1>Products - [{{ productNames().length }}]</h1>
-<add-product (onAdd)="onAddProduct($event)" ></add-product>
-<products-list [list]="productNames()" (onRemove)="removeProduct($event)"></products-list>
+<h1>Products - [{{ productNames.length }}]</h1>
+<add-product></add-product>
+<products-list [list]="productNames" (onRemove)="removeProduct($event)"></products-list>
 <!-- <selected-products-list></selected-products-list> -->

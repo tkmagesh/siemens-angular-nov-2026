@@ -1,6 +1,7 @@
 
 import { Component, signal } from "@angular/core";
 import { GreeterService } from "./greeter.service";
+import { GreeterBaseService } from "./greeter-base.service";
 import { GreeterV2Service } from "./greeterv2.service";
 import { IGreeterService } from "./IGreeterService";
 
@@ -33,7 +34,7 @@ function greeterFactory(ds : DateService){
 
 @Component({
     selector: 'app-greeter',
-   /* 
+   
     providers: [
         // GreeterService
         // { provide: GreeterService }
@@ -41,11 +42,13 @@ function greeterFactory(ds : DateService){
         
         // {provide : GreeterService, useValue : rudeGreeter}
         
-        { provide : GreeterService, useFactory : greeterFactory, deps :[DateService]},
+        // { provide : GreeterService, useFactory : greeterFactory, deps :[DateService]},
         DateService,
-        
+
+        { provide : GreeterBaseService, useClass : GreeterService}
+        // GreeterBaseService,
     ], 
-    */
+   
     template: `
         <h1>Greeter Component</h1>
         <label for="name">Enter your name:</label>

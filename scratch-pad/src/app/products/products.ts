@@ -1,10 +1,11 @@
-import { Component, computed, Signal, signal, WritableSignal } from "@angular/core";
+import { Component, computed, inject, Inject, Signal, signal, WritableSignal } from "@angular/core";
 import { Product, ProductList } from "./types";
 import { SelectedProductsPipe } from "./selected-products.pipe";
 import { JsonPipe } from "@angular/common";
 import { AddProduct } from "./add-product/add-product";
 import { ProductsList } from "./products-list/products-list";
 import { SelectedProductsList } from "./selected-products-list/selected-products-list";
+import { ProductsService, ProductsServiceBase } from "./products.service";
 
 @Component({
     selector: 'app-products',
@@ -20,38 +21,32 @@ import { SelectedProductsList } from "./selected-products-list/selected-products
 })
 export class Products {
     
+    constructor(private ps : ProductsService){
 
-    productNames = signal<ProductList>([
-        {name : 'Pen', selected : false},
-        {name : 'Pencil', selected : false},
-        {name : 'Marker', selected : false},
-        {name : 'Eraser', selected : false},
-        {name : 'Sharpener', selected : false},
-        {name : 'Scale', selected : false},
-        {name : 'Notebook', selected : false},
-        {name : 'Diary', selected : false}
-    ]);
-
-    selectedProducts = computed(() => {
-        console.log('Products.selectedProducts computed called');
-        return this.productNames().filter(p => p.selected);
-    });
-
-    // Method to handle the addition of a new product (from add-product component)
-    onAddProduct(newProduct: Product) {
-        this.productNames.update(products => [...products, newProduct]);
     }
 
+    get productNames() : Array<Product> {
+        return this.ps.products;
+    } 
+
+
+    get selectedProducts() : Array<Product> {
+        return this.ps.selected
+    }
+
+    /* // Method to handle the addition of a new product (from add-product component)
+    onAddProduct(newProduct: Product) {
+        this.ps.add(newProduct)
+    } */
+
     removeProduct(idx : number){
-        this.productNames.update(products => products.filter((_, i) => i !== idx));
+        this.ps.remove(idx)
     }
 
     updateProductSelection(idx : number, selected : boolean) {
-        this.productNames.update(products => {
-            const updatedProducts = [...products];
-            updatedProducts[idx] = { ...updatedProducts[idx], selected };
-            return updatedProducts;
-        });
+        let p = this.ps.getByIdx(idx)
+        let updatedProduct = {...p, selected }
+        this.ps.update(updatedProduct)
     }   
 
     
