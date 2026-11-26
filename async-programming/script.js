@@ -49,12 +49,6 @@
     function addAsyncPromiseClient(x,y){
         console.log(`[@client] invoking the service`);
         let p = addAsyncPromise(x,y);
-        setTimeout(() => {
-            processResult(p)
-        },4000)
-    }
-
-    function processResult(p){
         p.then(function(result){
             console.log(`[@client] result = ${result}`);
         })
@@ -67,7 +61,8 @@
         let p = new Promise(function(resolveFn, rejectFn){
             setTimeout(() => {
                 if (y == 0){
-                    return rejectFn(new Error('divide by zero error'))
+                    rejectFn(new Error('divide by zero error'))
+                    return 
                 }
                 let result = x / y
                 console.log(`   [@service] returning result`)
@@ -89,4 +84,26 @@
 
     window['divideAsyncPromiseClient'] = divideAsyncPromiseClient
 
+    function promiseChainClient(x,y){
+        console.log(`[@client] invoking the add service`)
+        addAsyncPromise(x,y)
+            .then(function(addResult){
+                console.log(`[@client] invoking the divide service`)
+                return divideAsyncPromise(addResult, y)
+            })
+            .then(function(finalResult){
+                console.log(`[@client] final result = ${finalResult}`)
+            })
+
+    }
+
+    window['promiseChainClient'] = promiseChainClient
+
+    async function addAsyncAwaitPromiseClient(x,y){
+        console.log(`[@client] invoking the service`);
+        let result = await addAsyncPromise(x,y);
+        console.log(`[@client] result = ${result}`);
+    }
+
+    window['addAsyncAwaitPromiseClient'] = addAsyncAwaitPromiseClient
 })()
