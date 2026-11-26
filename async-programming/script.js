@@ -15,21 +15,78 @@
 
     window['addSyncClient'] = addSyncClient;
 
-    function addAsync(x,y){
+    function addAsyncCallback(x,y, cb){
         console.log(`   [@service] processing ${x} and ${y}`)
         setTimeout(() => {
             let result = x + y
             console.log(`   [@service] returning result`)
-            return result
+            cb(result)
         }, 4000)
     }
 
-    function addAsyncClient(x,y){
+    function addAsyncCallbackClient(x,y){
         console.log(`[@client] invoking the service`)
-        let result = addAsync(x,y)
-        console.log(`[@client] result = ${result}`)
+        addAsyncCallback(x,y, function(result){
+            console.log(`[@client] result = ${result}`)
+        })
+        
     }
 
-    window['addAsyncClient'] = addAsyncClient;
+    window['addAsyncCallbackClient'] = addAsyncCallbackClient;
+
+    function addAsyncPromise(x,y){
+        console.log(`   [@service] processing ${x} and ${y}`)
+        let p = new Promise(function(resolveFn, rejectFn){
+            setTimeout(() => {
+                let result = x + y
+                console.log(`   [@service] returning result`)
+                resolveFn(result)
+            }, 4000)
+        })
+        return p;
+    }
+
+    function addAsyncPromiseClient(x,y){
+        console.log(`[@client] invoking the service`);
+        let p = addAsyncPromise(x,y);
+        setTimeout(() => {
+            processResult(p)
+        },4000)
+    }
+
+    function processResult(p){
+        p.then(function(result){
+            console.log(`[@client] result = ${result}`);
+        })
+    }
+
+    window['addAsyncPromiseClient'] = addAsyncPromiseClient;
+
+    function divideAsyncPromise(x,y){
+        console.log(`   [@service] processing ${x} and ${y}`)
+        let p = new Promise(function(resolveFn, rejectFn){
+            setTimeout(() => {
+                if (y == 0){
+                    return rejectFn(new Error('divide by zero error'))
+                }
+                let result = x / y
+                console.log(`   [@service] returning result`)
+                resolveFn(result)
+            }, 4000)
+        })
+        return p;
+    }
+
+    function divideAsyncPromiseClient(x,y){
+        console.log(`[@client] invoking the service`);
+        let p = divideAsyncPromise(x,y);
+        p.then(function(result){
+            console.log(`[@client] result = ${result}`);
+        }).catch(function(err){
+            console.log(`[@client] err : ${err}`)
+        })
+    }
+
+    window['divideAsyncPromiseClient'] = divideAsyncPromiseClient
 
 })()
