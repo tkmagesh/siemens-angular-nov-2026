@@ -1,0 +1,142 @@
+<!--
+  TEMPLATE - MachineConfigFormComponent (NgRx version)
+
+  KEY DIFFERENCES from the BehaviorSubject version:
+
+  1. isSaving is now an Observable (isSaving$), not a boolean:
+     Before: [disabled]="configForm.invalid || configForm.pristine || isSaving"
+     After:  [disabled]="configForm.invalid || configForm.pristine || (isSaving$ | async)"
+
+  2. saveError is now an Observable (saveError$), not a string:
+     Before: *ngIf="saveError"
+     After:  *ngIf="saveError$ | async as err"
+
+  Everything else is IDENTICAL — reactive forms are framework-agnostic,
+  they don't care whether state lives in a BehaviorSubject or NgRx store.
+
+  REACTIVE FORMS TEMPLATE CONCEPTS (same as BehaviorSubject version):
+  [formGroup], formControlName, .invalid, .dirty, .touched, .errors, (ngSubmit)
+-->
+
+<div class="config-form-container">
+  <h2>Machine Configuration</h2>
+
+  <p *ngIf="noMachineSelected" class="no-selection">
+    Select a machine to edit its thresholds.
+  </p>
+
+  <form
+    *ngIf="!noMachineSelected"
+    [formGroup]="configForm"
+    (ngSubmit)="onSubmit()"
+    class="config-form"
+  >
+
+    <!-- ── Temperature Range ─────────────────────────────────────────── -->
+    <fieldset>
+      <legend>Temperature Thresholds (°C)</legend>
+
+      <div class="form-field">
+        <label for="minTemp">Min Temperature</label>
+        <input
+          id="minTemp"
+          type="number"
+          formControlName="minTemperature"
+          placeholder="-50 to 200"
+        />
+        <div class="errors" *ngIf="minTemp.touched && minTemp.invalid">
+          <span *ngIf="minTemp.errors?.['required']">Required.</span>
+          <span *ngIf="minTemp.errors?.['min']">Must be at least -50°C.</span>
+          <span *ngIf="minTemp.errors?.['max']">Must be at most 200°C.</span>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="maxTemp">Max Temperature</label>
+        <input
+          id="maxTemp"
+          type="number"
+          formControlName="maxTemperature"
+          placeholder="-50 to 200"
+        />
+        <div class="errors" *ngIf="maxTemp.touched && maxTemp.invalid">
+          <span *ngIf="maxTemp.errors?.['required']">Required.</span>
+          <span *ngIf="maxTemp.errors?.['min']">Must be at least -50°C.</span>
+          <span *ngIf="maxTemp.errors?.['max']">Must be at most 200°C.</span>
+        </div>
+      </div>
+
+      <!-- CROSS-FIELD ERROR on the group, not individual controls -->
+      <div class="errors cross-field" *ngIf="configForm.errors?.['temperatureRange']">
+        {{ configForm.errors?.['temperatureRange'] }}
+      </div>
+    </fieldset>
+
+    <!-- ── Pressure ──────────────────────────────────────────────────── -->
+    <fieldset>
+      <legend>Pressure Threshold (bar)</legend>
+      <div class="form-field">
+        <label for="maxPressureInput">Max Pressure</label>
+        <input
+          id="maxPressureInput"
+          type="number"
+          formControlName="maxPressure"
+          placeholder="0 to 50"
+        />
+        <div class="errors" *ngIf="maxPressure.touched && maxPressure.invalid">
+          <span *ngIf="maxPressure.errors?.['required']">Required.</span>
+          <span *ngIf="maxPressure.errors?.['min']">Must be at least 0.</span>
+          <span *ngIf="maxPressure.errors?.['max']">Must be at most 50 bar.</span>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- ── RPM ───────────────────────────────────────────────────────── -->
+    <fieldset>
+      <legend>RPM Threshold</legend>
+      <div class="form-field">
+        <label for="maxRpmInput">Max RPM</label>
+        <input
+          id="maxRpmInput"
+          type="number"
+          formControlName="maxRpm"
+          placeholder="0 to 10000"
+        />
+        <div class="errors" *ngIf="maxRpm.touched && maxRpm.invalid">
+          <span *ngIf="maxRpm.errors?.['required']">Required.</span>
+          <span *ngIf="maxRpm.errors?.['min']">Must be at least 0.</span>
+          <span *ngIf="maxRpm.errors?.['max']">Must be at most 10,000 RPM.</span>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- SERVER ERROR
+         In BehaviorSubject version: *ngIf="saveError" (string | null)
+         In NgRx version:            *ngIf="saveError$ | async as err" (Observable<string|null>)
+         The store holds this — set by MachinesReducer on saveConfigFailure action. -->
+    <div class="save-error" *ngIf="saveError$ | async as err">{{ err }}</div>
+
+    <!-- ACTIONS
+         isSaving$ is an Observable<boolean> from selectMachinesSaving selector.
+         MachinesReducer sets saving:true when saveConfig action fires.
+         MachinesReducer sets saving:false when saveConfigSuccess/Failure fires.
+         No manual isSaving = true/false in this component needed. -->
+    <div class="form-actions">
+      <button
+        type="submit"
+        [disabled]="configForm.invalid || configForm.pristine || (isSaving$ | async)"
+        class="btn-save">
+        {{ (isSaving$ | async) ? 'Saving...' : 'Save Changes' }}
+      </button>
+
+      <button
+        type="button"
+        (click)="onReset()"
+        [disabled]="configForm.pristine"
+        class="btn-reset">
+        Reset
+      </button>
+    </div>
+
+  </form>
+</div>

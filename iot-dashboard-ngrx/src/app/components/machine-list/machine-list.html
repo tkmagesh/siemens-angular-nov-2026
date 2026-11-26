@@ -1,0 +1,76 @@
+<!--
+  TEMPLATE - MachineListComponent (NgRx version)
+
+  KEY DIFFERENCE from the BehaviorSubject version:
+  - All Observables come from store.select(selector), not service properties
+  - User actions call store.dispatch(Action), not service methods
+  - The template itself is IDENTICAL in structure — NgRx only changes the .ts class
+
+  ANGULAR TEMPLATE CONCEPTS SHOWN:
+  1. async pipe           — subscribes to store Observables automatically
+  2. *ngIf / *ngFor       — conditional and list rendering
+  3. (input) event        — fires on every keystroke
+  4. [class.selected]     — dynamic CSS class binding
+-->
+
+<div class="machine-list-container">
+
+  <div class="list-header">
+    <h2>Machines</h2>
+    <button class="btn-search-toggle" (click)="toggleSearch()">
+      {{ showSearch ? '✕ Close' : '🔍 Search' }}
+    </button>
+  </div>
+
+  <!-- SEARCH INPUT (shown when showSearch is true — pure UI state in component)
+       onSearch() dispatches MachinesActions.searchMachines({ term })
+       The debounce lives in MachinesEffects.searchMachines$, NOT here. -->
+  <div *ngIf="showSearch" class="search-panel">
+    <input
+      type="text"
+      placeholder="Search machines by name..."
+      (input)="onSearch($any($event.target).value)"
+      class="search-input"
+      autofocus
+    />
+    <!-- Search results list -->
+    <ul *ngIf="showSearchResults$ | async" class="search-results">
+      <li
+        *ngFor="let machine of searchResults$ | async"
+        (click)="onSelectMachine(machine)"
+        class="search-result-row"
+      >
+        {{ machine.name }} — {{ machine.location }}
+      </li>
+    </ul>
+  </div>
+
+  <!-- LOADING STATE
+       loading$ comes from store.select(selectMachinesLoading).
+       MachinesReducer sets loading:true when loadMachines action fires. -->
+  <div *ngIf="loading$ | async" class="loading">Loading machines...</div>
+
+  <!-- MACHINE LIST
+       machines$ comes from store.select(selectAllMachines).
+       NgRx Entity Adapter gives us selectAll() which produces the array.
+       The async pipe handles subscribe + unsubscribe automatically. -->
+  <ul *ngIf="!(loading$ | async)" class="machine-list">
+
+    <li
+      *ngFor="let machine of machines$ | async"
+      (click)="onSelectMachine(machine)"
+      [class.selected]="(selectedMachineId$ | async) === machine.id"
+      class="machine-row"
+    >
+      <span class="machine-name">{{ machine.name }}</span>
+      <span class="machine-location">{{ machine.location }}</span>
+
+      <!-- Status badge: CSS class changes based on machine.status value -->
+      <span class="status-badge" [class]="'status-' + machine.status">
+        {{ machine.status }}
+      </span>
+    </li>
+
+  </ul>
+
+</div>

@@ -1,0 +1,28 @@
+{
+  "machines": [
+    { "id": 1, "name": "Turbine A", "type": "Turbine", "location": "Hall B - Slot 1", "status": "online" },
+    { "id": 2, "name": "Compressor X", "type": "Compressor", "location": "Hall B - Slot 2", "status": "online" },
+    { "id": 3, "name": "Pump P1", "type": "Pump", "location": "Hall C - Slot 1", "status": "maintenance" },
+    { "id": 4, "name": "Turbine B", "type": "Turbine", "location": "Hall C - Slot 3", "status": "offline" }
+  ],
+  "configs": [
+    { "id": 1, "machineId": 1, "minTemperature": 20, "maxTemperature": 90, "maxPressure": 10, "maxRpm": 3000 },
+    { "id": 2, "machineId": 2, "minTemperature": 15, "maxTemperature": 85, "maxPressure": 12, "maxRpm": 2500 },
+    { "id": 3, "machineId": 3, "minTemperature": 10, "maxTemperature": 75, "maxPressure": 8,  "maxRpm": 1800 },
+    { "id": 4, "machineId": 4, "minTemperature": 20, "maxTemperature": 90, "maxPressure": 10, "maxRpm": 3000 }
+  ],
+  "alerts": [
+    {
+      "id": 1,
+      "machineId": 1,
+      "machineName": "Turbine A",
+      "metric": "temperature",
+      "value": 93,
+      "threshold": 90,
+      "severity": "warning",
+      "message": "Temperature 93°C exceeds max 90°C",
+      "timestamp": 1700000000000,
+      "acknowledged": false
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+<!--
+  ROOT TEMPLATE - app.html
+
+  Identical layout to the BehaviorSubject version.
+  The template is unaware of NgRx — it just composes the four feature components.
+  Each component reads from the store via selectors and dispatches actions on user input.
+-->
+
+<div class="app-shell">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <h1>IoT Factory Dashboard <span class="ngrx-badge">NgRx</span></h1>
+    <span class="subtitle">Real-time machine monitoring</span>
+  </header>
+
+  <!-- MAIN LAYOUT: sidebar + content area -->
+  <main class="app-main">
+
+    <!-- LEFT SIDEBAR: machine list + search -->
+    <aside class="sidebar">
+      <app-machine-list></app-machine-list>
+    </aside>
+
+    <!-- RIGHT CONTENT: sensor data + config form -->
+    <section class="content">
+      <app-sensor-dashboard></app-sensor-dashboard>
+      <app-machine-config-form></app-machine-config-form>
+    </section>
+
+  </main>
+
+  <!-- FOOTER: alert panel spans full width -->
+  <footer class="app-footer">
+    <app-alert-panel></app-alert-panel>
+  </footer>
+
+</div>

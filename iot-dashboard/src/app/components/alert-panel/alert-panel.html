@@ -1,0 +1,54 @@
+<!--
+  TEMPLATE - AlertPanelComponent
+-->
+
+<div class="alert-panel">
+
+  <!-- HEADER with badge count and toggle -->
+  <div class="panel-header" (click)="toggleExpanded()">
+    <h3>
+      Active Alerts
+      <!-- Badge: shows count from alertCount$ Observable -->
+      <span class="badge" *ngIf="(alertCount$ | async) as count">
+        {{ count }}
+      </span>
+    </h3>
+    <span class="toggle-icon">{{ isExpanded ? '▲' : '▼' }}</span>
+  </div>
+
+  <!-- ALERT LIST (shown only when expanded) -->
+  <ul *ngIf="isExpanded" class="alert-list">
+
+    <!-- async pipe subscribes to activeAlerts$ -->
+    <ng-container *ngIf="activeAlerts$ | async as alerts">
+
+      <!-- Empty state -->
+      <li *ngIf="alerts.length === 0" class="no-alerts">
+        No active alerts.
+      </li>
+
+      <!-- Alert rows -->
+      <li
+        *ngFor="let alert of alerts"
+        class="alert-row"
+        [class]="'severity-' + alert.severity"
+      >
+        <div class="alert-info">
+          <span class="alert-machine">{{ alert.machineName }}</span>
+          <span class="alert-message">{{ alert.message }}</span>
+          <span class="alert-time">{{ alert.timestamp | date:'HH:mm:ss' }}</span>
+        </div>
+
+        <!-- Acknowledge button — calls onAcknowledge() with the alert ID -->
+        <button
+          class="ack-btn"
+          (click)="onAcknowledge(alert.id!)"
+          title="Mark as acknowledged">
+          ✓ Ack
+        </button>
+      </li>
+
+    </ng-container>
+  </ul>
+
+</div>

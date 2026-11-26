@@ -1,0 +1,53 @@
+<!--
+  TEMPLATE - MachineListComponent
+
+  KEY ANGULAR CONCEPTS SHOWN HERE:
+  1. async pipe           — subscribes to Observables automatically
+  2. *ngIf               — conditional rendering
+  3. *ngFor              — list rendering
+  4. event binding (…)   — user interaction
+  5. class binding [class.active] — dynamic CSS based on state
+-->
+
+<div class="machine-list-container">
+
+  <h2>Machines</h2>
+
+  <!-- SEARCH INPUT
+       (input) fires on every keystroke.
+       $event.target.value is the current text in the box.
+       onSearch() delegates to DashboardStateService. -->
+  <input
+    type="text"
+    placeholder="Search machines..."
+    (input)="onSearch($any($event.target).value)"
+    class="search-input"
+  />
+
+  <!-- LOADING STATE
+       *ngIf="isLoading" shows this spinner only while isLoading is true. -->
+  <div *ngIf="isLoading" class="loading">Loading machines...</div>
+
+  <!-- MACHINE LIST
+       async pipe: subscribes to machines$ and assigns each emission to `machines`.
+       *ngFor iterates the array. trackBy avoids full DOM re-renders on data refresh. -->
+  <ul *ngIf="!isLoading" class="machine-list">
+
+    <li
+      *ngFor="let machine of machines$ | async"
+      (click)="onSelectMachine(machine)"
+      [class.selected]="(selectedMachineId$ | async) === machine.id"
+      class="machine-row"
+    >
+      <span class="machine-name">{{ machine.name }}</span>
+      <span class="machine-location">{{ machine.location }}</span>
+
+      <!-- Status badge: CSS class changes based on status value -->
+      <span class="status-badge" [class]="'status-' + machine.status">
+        {{ machine.status }}
+      </span>
+    </li>
+
+  </ul>
+
+</div>

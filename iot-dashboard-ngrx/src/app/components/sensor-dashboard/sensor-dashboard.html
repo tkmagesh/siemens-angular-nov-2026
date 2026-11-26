@@ -1,0 +1,126 @@
+<!--
+  TEMPLATE - SensorDashboardComponent (NgRx version)
+
+  NOTICE: The template structure is very similar to the BehaviorSubject version.
+  NgRx primarily changes the COMPONENT CLASS, not the template.
+  The key difference: Observables come from store selectors, not service properties.
+
+  NEW PATTERN vs BehaviorSubject version:
+  - selectedMachine$ | async drives a nested *ngIf that exposes the machine id
+  - We pass machine.id to helper methods that call store.select() per-machine
+  - connectionStatus$ shows WebSocket health (not present in BehaviorSubject version
+    because SensorService managed the connection internally)
+-->
+
+<div class="sensor-dashboard">
+
+  <!-- NO SELECTION PLACEHOLDER -->
+  <div *ngIf="noSelection$ | async" class="no-selection">
+    <p>Select a machine from the list to view live sensor data.</p>
+  </div>
+
+  <!-- DASHBOARD CONTENT (shown when a machine is selected) -->
+  <ng-container *ngIf="selectedMachine$ | async as machine">
+
+    <!-- Heading with machine name + WebSocket connection indicator -->
+    <div class="dashboard-header">
+      <h2>{{ machine.name }} — Live Sensor Data</h2>
+
+      <!-- WebSocket status badge — driven by store state, set by SensorsEffects -->
+      <span
+        class="ws-status"
+        [class]="'ws-' + (connectionStatus$ | async)"
+      >
+        {{ connectionStatus$ | async }}
+      </span>
+    </div>
+
+    <!-- TAB BAR (pure UI state — activeTab lives in the component class) -->
+    <div class="tab-bar">
+      <button
+        [class.active]="activeTab === 'live'"
+        (click)="setTab('live')">
+        Live Readings
+      </button>
+      <button
+        [class.active]="activeTab === 'summary'"
+        (click)="setTab('summary')">
+        Summary (last 20)
+      </button>
+    </div>
+
+    <!-- ── TAB: LIVE READINGS ──────────────────────────────────────────────
+         latestReading$ = store.select(selectReadingForMachine(selectedMachineId))
+         SensorDashboardComponent derives this from selectedMachine$ via switchMap.
+         The selector returns null until the first WebSocket reading arrives. -->
+    <div *ngIf="activeTab === 'live'" class="readings-panel">
+
+      <ng-container
+        *ngIf="latestReading$ | async as reading; else waiting">
+        <div class="reading-card">
+          <label>Temperature</label>
+          <span class="value">{{ reading.temperature | number:'1.1-1' }} °C</span>
+        </div>
+        <div class="reading-card">
+          <label>Pressure</label>
+          <span class="value">{{ reading.pressure | number:'1.2-2' }} bar</span>
+        </div>
+        <div class="reading-card">
+          <label>RPM</label>
+          <span class="value">{{ reading.rpm | number:'1.0-0' }}</span>
+        </div>
+        <div class="reading-card timestamp">
+          <label>Last Update</label>
+          <span class="value">{{ reading.timestamp | date:'HH:mm:ss' }}</span>
+        </div>
+      </ng-container>
+
+      <ng-template #waiting>
+        <p class="waiting">Waiting for sensor data...</p>
+      </ng-template>
+
+    </div>
+
+    <!-- ── TAB: SUMMARY ───────────────────────────────────────────────────
+         summary$ = store.select(selectSummaryForMachine(selectedMachineId))
+         SensorsSelectors compute avg/min/max from the latest reading in state. -->
+    <div *ngIf="activeTab === 'summary'" class="summary-panel">
+
+      <ng-container *ngIf="summary$ | async as s">
+        <table class="summary-table">
+          <thead>
+            <tr><th>Metric</th><th>Avg</th><th>Min</th><th>Max</th><th>Samples</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Temperature (°C)</td>
+              <td>{{ s.avgTemperature | number:'1.1-1' }}</td>
+              <td>{{ s.minTemperature | number:'1.1-1' }}</td>
+              <td>{{ s.maxTemperature | number:'1.1-1' }}</td>
+              <td>{{ s.sampleCount }}</td>
+            </tr>
+            <tr>
+              <td>Pressure (bar)</td>
+              <td>{{ s.avgPressure | number:'1.2-2' }}</td>
+              <td colspan="2">—</td>
+              <td>{{ s.sampleCount }}</td>
+            </tr>
+            <tr>
+              <td>RPM</td>
+              <td>{{ s.avgRpm | number:'1.0-0' }}</td>
+              <td colspan="2">—</td>
+              <td>{{ s.sampleCount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+
+      <p *ngIf="!(summary$ | async)" class="waiting">
+        Waiting for enough readings to compute summary...
+      </p>
+
+    </div>
+
+  </ng-container>
+
+</div>

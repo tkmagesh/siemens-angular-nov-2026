@@ -11,8 +11,10 @@
 
         function onBtnDoWorkClick(){
             displayMessage('Work Started');
-            doWork();
-            displayMessage('Work Completed');
+            setTimeout(function(){
+                doWork();
+                displayMessage('Work Completed');
+            })
         }
         function doWork(){
             for(let i = 0; i < 10000; i++){

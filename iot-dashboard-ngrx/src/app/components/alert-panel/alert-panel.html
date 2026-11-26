@@ -1,0 +1,64 @@
+<!--
+  TEMPLATE - AlertPanelComponent (NgRx version)
+
+  NOTICE: Template is structurally identical to the BehaviorSubject version.
+  NgRx changes are invisible in the template — they're in the .ts class.
+
+  What changed in the class:
+    Before: activeAlerts$ = this.alertService.activeAlerts$
+    After:  activeAlerts$ = this.store.select(selectActiveAlerts)
+
+    Before: this.alertService.acknowledgeAlert(alertId)
+    After:  this.store.dispatch(AlertsActions.acknowledgeAlert({ alertId }))
+-->
+
+<div class="alert-panel">
+
+  <!-- HEADER with count badge and expand/collapse toggle -->
+  <div class="panel-header" (click)="toggleExpanded()">
+    <h3>
+      Active Alerts
+      <!-- Badge: alertCount$ comes from selectActiveAlertCount selector -->
+      <span class="badge" *ngIf="(alertCount$ | async) as count">
+        {{ count }}
+      </span>
+    </h3>
+    <span class="toggle-icon">{{ isExpanded ? '▲' : '▼' }}</span>
+  </div>
+
+  <!-- ALERT LIST (shown only when isExpanded — UI-only state in the component) -->
+  <ul *ngIf="isExpanded" class="alert-list">
+
+    <!-- async pipe subscribes to activeAlerts$ from the store -->
+    <ng-container *ngIf="activeAlerts$ | async as alerts">
+
+      <!-- Empty state -->
+      <li *ngIf="alerts.length === 0" class="no-alerts">
+        No active alerts.
+      </li>
+
+      <!-- Alert rows -->
+      <li
+        *ngFor="let alert of alerts"
+        class="alert-row"
+        [class]="'severity-' + alert.severity"
+      >
+        <div class="alert-info">
+          <span class="alert-machine">{{ alert.machineName }}</span>
+          <span class="alert-message">{{ alert.message }}</span>
+          <span class="alert-time">{{ alert.timestamp | date:'HH:mm:ss' }}</span>
+        </div>
+
+        <!-- Acknowledge button — dispatches AlertsActions.acknowledgeAlert -->
+        <button
+          class="ack-btn"
+          (click)="onAcknowledge(alert.id!)"
+          title="Mark as acknowledged">
+          ✓ Ack
+        </button>
+      </li>
+
+    </ng-container>
+  </ul>
+
+</div>

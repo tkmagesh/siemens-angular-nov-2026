@@ -1,0 +1,99 @@
+<!--
+  TEMPLATE - SensorDashboardComponent
+-->
+
+<div class="sensor-dashboard">
+
+  <!-- NO SELECTION PLACEHOLDER -->
+  <div *ngIf="noSelection" class="no-selection">
+    <p>Select a machine from the list to view live sensor data.</p>
+  </div>
+
+  <!-- DASHBOARD CONTENT (shown when a machine is selected) -->
+  <ng-container *ngIf="!noSelection">
+
+    <!-- Heading: machine name from DashboardStateService -->
+    <h2>{{ (selectedMachine$ | async)?.name }} — Live Sensor Data</h2>
+
+    <!-- TAB BAR (pure UI state — no service involved) -->
+    <div class="tab-bar">
+      <button
+        [class.active]="activeTab === 'live'"
+        (click)="setTab('live')">
+        Live Readings
+      </button>
+      <button
+        [class.active]="activeTab === 'summary'"
+        (click)="setTab('summary')">
+        Summary (last 20)
+      </button>
+    </div>
+
+    <!-- ── TAB: LIVE READINGS ──────────────────────────────────────────────
+         latestReading$ emits a new SensorReading every ~1s.
+         The async pipe re-renders this block on each emission. -->
+    <div *ngIf="activeTab === 'live'" class="readings-panel">
+
+      <ng-container *ngIf="latestReading$ | async as reading; else waiting">
+        <div class="reading-card">
+          <label>Temperature</label>
+          <span class="value">{{ reading.temperature | number:'1.1-1' }} °C</span>
+        </div>
+        <div class="reading-card">
+          <label>Pressure</label>
+          <span class="value">{{ reading.pressure | number:'1.2-2' }} bar</span>
+        </div>
+        <div class="reading-card">
+          <label>RPM</label>
+          <span class="value">{{ reading.rpm | number:'1.0-0' }}</span>
+        </div>
+        <div class="reading-card timestamp">
+          <label>Last Update</label>
+          <span class="value">{{ reading.timestamp | date:'HH:mm:ss' }}</span>
+        </div>
+      </ng-container>
+
+      <!-- Shown while waiting for the first reading -->
+      <ng-template #waiting>
+        <p class="waiting">Waiting for sensor data...</p>
+      </ng-template>
+
+    </div>
+
+    <!-- ── TAB: SUMMARY ───────────────────────────────────────────────────
+         summary$ emits a SensorSummary each time scan() recomputes it. -->
+    <div *ngIf="activeTab === 'summary'" class="summary-panel">
+
+      <ng-container *ngIf="summary$ | async as s">
+        <table class="summary-table">
+          <thead>
+            <tr><th>Metric</th><th>Avg</th><th>Min</th><th>Max</th><th>Samples</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Temperature (°C)</td>
+              <td>{{ s.avgTemperature }}</td>
+              <td>{{ s.minTemperature | number:'1.1-1' }}</td>
+              <td>{{ s.maxTemperature | number:'1.1-1' }}</td>
+              <td>{{ s.sampleCount }}</td>
+            </tr>
+            <tr>
+              <td>Pressure (bar)</td>
+              <td>{{ s.avgPressure }}</td>
+              <td colspan="2">—</td>
+              <td>{{ s.sampleCount }}</td>
+            </tr>
+            <tr>
+              <td>RPM</td>
+              <td>{{ s.avgRpm }}</td>
+              <td colspan="2">—</td>
+              <td>{{ s.sampleCount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+
+    </div>
+
+  </ng-container>
+</div>
