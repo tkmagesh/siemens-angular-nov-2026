@@ -106,4 +106,16 @@
     }
 
     window['addAsyncAwaitPromiseClient'] = addAsyncAwaitPromiseClient
+
+    async function divideAsyncAwaitPromiseClient(x,y){
+        try {
+            console.log(`[@client] invoking the service`);
+            let result = await divideAsyncPromise(x,y);
+            console.log(`[@client] result = ${result}`);
+        } catch (e) {
+            console.log(`[@client] err = ${e}`);
+        }
+    }
+
+    window['divideAsyncAwaitPromiseClient'] = divideAsyncAwaitPromiseClient
 })()
