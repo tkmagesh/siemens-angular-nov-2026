@@ -1,0 +1,15 @@
+ All products               │ GET /products                            │
+├────────────────────────────┼──────────────────────────────────────────┤
+│ Search by name/description │ GET /products?q=keyboard                 │
+├────────────────────────────┼──────────────────────────────────────────┤
+│ Filter by category         │ GET /products?category=Electronics       │
+├────────────────────────────┼──────────────────────────────────────────┤
+│ Filter by brand            │ GET /products?brand=SoundMax             │
+├────────────────────────────┼──────────────────────────────────────────┤
+│ Sort by price              │ GET /products?_sort=price&_order=asc     │
+├────────────────────────────┼──────────────────────────────────────────┤
+│ Pagination                 │ GET /products?_page=1&_limit=10          │
+├────────────────────────────┼──────────────────────────────────────────┤
+│ Price range (gte/lte)      │ GET /products?price_gte=50&price_lte=200 │
+├────────────────────────────┼──────────────────────────────────────────┤
+│ Single product             │ GET /products/1
