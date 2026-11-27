@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Loop</title>
+    <script>
+        //create an instance of the worker
+        let worker = new Worker('worker-script.js')
+
+        function displayMessage(m){
+            document.getElementById('divMessages').innerHTML += m + '<br/>'
+        }
+
+        function onBtnDoWorkClick(){
+            worker.postMessage({ type : 'start' })
+            displayMessage('Work Started');
+        }
+
+        worker.addEventListener('message', (evt) => {
+            console.log(`[@document] evt.data => `, evt.data)
+            if (evt.data.type === 'done'){
+                displayMessage('Work Completed!')
+            } else if (evt.data.type === 'progress') {
+                document.getElementById('workProgress').value = evt.data.percentCompleted;
+            }
+        })
+        
+        function onDocumentLoad(){
+            document.getElementById('btnDoWork')
+                .addEventListener('click', onBtnDoWorkClick);
+        }
+        window.addEventListener('load', onDocumentLoad)
+    </script>
+</head>
+<body>
+    <input type="text" name="" id="">
+    <button id="btnDoWork">Do Work</button>
+    <div>
+        <progress id="workProgress" min="0" max="100" value="0"></progress>
+    </div>
+    <div id="divMessages"></div>
+</body>
+</html>
