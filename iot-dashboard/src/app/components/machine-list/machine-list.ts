@@ -29,6 +29,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Machine } from '../../models/machine.model';
 import { MachineService } from '../../services/machine';
 import { DashboardStateService } from '../../services/dashboard-state';
@@ -62,6 +63,12 @@ export class MachineListComponent implements OnInit {
    */
   selectedMachineId$!: Observable<number | null>;
 
+  /** Search results from DashboardStateService — shown when the user types 2+ characters. */
+  searchResults$!: Observable<Machine[]>;
+
+  /** True when there are search results to show instead of the full list. */
+  hasSearchResults$!: Observable<boolean>;
+
   /**
    * True while the initial machine list is loading.
    * Shows a spinner in the template.
@@ -76,10 +83,14 @@ export class MachineListComponent implements OnInit {
     this.machines$ = this.machineService.getAllMachines();
     this.machines$.subscribe({ complete: () => this.isLoading = false });
 
-    // Track selected machine ID for row highlighting
+    // Extract just the ID so the template comparison (=== machine.id) works correctly
     this.selectedMachineId$ = this.dashboardState.selectedMachine$.pipe(
-      // map to just the ID — avoids re-renders if only other machine fields change
-    ) as any; // simplified for readability; production code would use map(m => m?.id)
+      map(m => m?.id ?? null)
+    );
+
+    // Search results come from DashboardStateService (debounced HTTP via switchMap)
+    this.searchResults$ = this.dashboardState.searchResults$;
+    this.hasSearchResults$ = this.searchResults$.pipe(map(r => r.length > 0));
   }
 
   // ─── User Interaction Handlers ────────────────────────────────────────────

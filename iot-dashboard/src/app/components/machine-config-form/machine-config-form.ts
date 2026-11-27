@@ -38,8 +38,8 @@ import {
   FormGroup, FormControl,
   Validators, AbstractControl, ValidationErrors
 } from '@angular/forms';
-import { Subject, EMPTY } from 'rxjs';
-import { takeUntil, filter, switchMap, exhaustMap, tap, catchError } from 'rxjs/operators';
+import { Observable, Subject, EMPTY } from 'rxjs';
+import { takeUntil, filter, switchMap, exhaustMap, tap, catchError, map } from 'rxjs/operators';
 import { MachineConfig } from '../../models/machine.model';
 import { MachineService } from '../../services/machine';
 import { DashboardStateService } from '../../services/dashboard-state';
@@ -132,7 +132,14 @@ export class MachineConfigFormComponent implements OnInit, OnDestroy {
 
   isSaving = false;
   saveError: string | null = null;
-  noMachineSelected = true;
+
+  /**
+   * Observable<boolean> — true when no machine config is loaded yet.
+   * Using | async ensures markForCheck() fires on emission without zone.js.
+   */
+  noMachineSelected$: Observable<boolean> = this.dashboardState.currentConfig$.pipe(
+    map(c => c === null)
+  );
 
   // ─── Shorthand getters (for cleaner template code) ────────────────────────
 
@@ -147,16 +154,12 @@ export class MachineConfigFormComponent implements OnInit, OnDestroy {
     // Populate the form whenever the selected machine changes
     this.dashboardState.currentConfig$.pipe(
       takeUntil(this.destroy$),
+      filter((config): config is NonNullable<typeof config> => config !== null),
     ).subscribe(config => {
-      if (config) {
-        this.noMachineSelected = false;
-        // patchValue fills in ONLY the named fields (safe if model adds new fields later)
-        this.configForm.patchValue(config);
-        // Reset dirty/touched state so "Save" button is disabled until user makes a change
-        this.configForm.markAsPristine();
-      } else {
-        this.noMachineSelected = true;
-      }
+      // patchValue fills in ONLY the named fields (safe if model adds new fields later)
+      this.configForm.patchValue(config);
+      // Reset dirty/touched state so "Save" button is disabled until user makes a change
+      this.configForm.markAsPristine();
     });
 
     /**

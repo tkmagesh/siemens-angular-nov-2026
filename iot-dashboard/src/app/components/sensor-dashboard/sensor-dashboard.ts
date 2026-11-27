@@ -23,8 +23,8 @@
 
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, Subject, EMPTY } from 'rxjs';
-import { switchMap, takeUntil, filter } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { switchMap, takeUntil, filter, map } from 'rxjs/operators';
 import { SensorReading, SensorSummary } from '../../models/sensor-reading.model';
 import { Machine } from '../../models/machine.model';
 import { SensorService } from '../../services/sensor';
@@ -74,8 +74,12 @@ export class SensorDashboardComponent implements OnInit, OnDestroy {
   /** Which display mode the user has toggled. Pure UI concern, lives here. */
   activeTab: 'live' | 'summary' = 'live';
 
-  /** True when no machine is selected yet. */
-  noSelection = true;
+  /**
+   * Observable<boolean> — true when no machine is selected.
+   * Used with | async in the template so Angular's markForCheck() fires
+   * on each emission, regardless of zone.js configuration.
+   */
+  noSelection$ = this.dashboardState.selectedMachine$.pipe(map(m => m === null));
 
   // ─── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -104,10 +108,6 @@ export class SensorDashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
     );
 
-    // Track whether a machine is selected to show/hide the placeholder message
-    this.dashboardState.selectedMachine$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(m => this.noSelection = m === null);
   }
 
   ngOnDestroy(): void {

@@ -18,13 +18,13 @@
   <h2>Machine Configuration</h2>
 
   <!-- Placeholder when no machine selected -->
-  <p *ngIf="noMachineSelected" class="no-selection">
+  <p *ngIf="noMachineSelected$ | async" class="no-selection">
     Select a machine to edit its thresholds.
   </p>
 
   <!-- FORM (hidden until a machine is selected) -->
   <form
-    *ngIf="!noMachineSelected"
+    *ngIf="!(noMachineSelected$ | async)"
     [formGroup]="configForm"
     (ngSubmit)="onSubmit()"
     class="config-form"

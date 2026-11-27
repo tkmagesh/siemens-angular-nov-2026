@@ -5,12 +5,12 @@
 <div class="sensor-dashboard">
 
   <!-- NO SELECTION PLACEHOLDER -->
-  <div *ngIf="noSelection" class="no-selection">
+  <div *ngIf="noSelection$ | async" class="no-selection">
     <p>Select a machine from the list to view live sensor data.</p>
   </div>
 
   <!-- DASHBOARD CONTENT (shown when a machine is selected) -->
-  <ng-container *ngIf="!noSelection">
+  <ng-container *ngIf="!(noSelection$ | async)">
 
     <!-- Heading: machine name from DashboardStateService -->
     <h2>{{ (selectedMachine$ | async)?.name }} — Live Sensor Data</h2>

@@ -28,10 +28,25 @@
        *ngIf="isLoading" shows this spinner only while isLoading is true. -->
   <div *ngIf="isLoading" class="loading">Loading machines...</div>
 
-  <!-- MACHINE LIST
-       async pipe: subscribes to machines$ and assigns each emission to `machines`.
-       *ngFor iterates the array. trackBy avoids full DOM re-renders on data refresh. -->
-  <ul *ngIf="!isLoading" class="machine-list">
+  <!-- SEARCH RESULTS (shown while search term is active and results exist) -->
+  <ng-container *ngIf="hasSearchResults$ | async">
+    <p class="search-hint">Search results:</p>
+    <ul class="machine-list">
+      <li
+        *ngFor="let machine of searchResults$ | async"
+        (click)="onSelectMachine(machine)"
+        [class.selected]="(selectedMachineId$ | async) === machine.id"
+        class="machine-row"
+      >
+        <span class="machine-name">{{ machine.name }}</span>
+        <span class="machine-location">{{ machine.location }}</span>
+        <span class="status-badge" [ngClass]="'status-' + machine.status">{{ machine.status }}</span>
+      </li>
+    </ul>
+  </ng-container>
+
+  <!-- FULL MACHINE LIST (shown when not searching) -->
+  <ul *ngIf="!isLoading && !(hasSearchResults$ | async)" class="machine-list">
 
     <li
       *ngFor="let machine of machines$ | async"
@@ -42,8 +57,8 @@
       <span class="machine-name">{{ machine.name }}</span>
       <span class="machine-location">{{ machine.location }}</span>
 
-      <!-- Status badge: CSS class changes based on status value -->
-      <span class="status-badge" [class]="'status-' + machine.status">
+      <!-- [ngClass] adds to existing classes; [class] replaces them -->
+      <span class="status-badge" [ngClass]="'status-' + machine.status">
         {{ machine.status }}
       </span>
     </li>
