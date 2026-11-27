@@ -1,0 +1,22 @@
+<h1>Search</h1>
+<div><label for="">Search :</label><input type="text" name="" id=""></div>
+<!-- <button (click)="onBtnLoadClick()">Load Data</button> -->
+<table>
+    <tr>
+        <td>ID</td>
+        <td>Name</td>
+        <td>Description</td>
+        <td>Category</td>
+        <td>Brand</td>
+    </tr>
+    <!-- data -->
+     @for (item of items$ | async ; track item.id) {
+        <tr>
+            <td>{{item.id}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.description}}</td>
+            <td>{{item.category}}</td>
+            <td>{{item.brand}}</td>
+        </tr>
+     }
+</table>
